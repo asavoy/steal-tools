@@ -288,6 +288,23 @@ describe("multi build", function(){
 				done();
 			}).catch(done);
 		});
+
+		it("Should allow setting clean-css options", function(done){
+			var options = {
+				quiet: true,
+				cleanCSSOptions: {
+					keepSpecialComments: 0 // remove all, default '*'
+				}
+			};
+
+			multiBuild(config, options).then(function(){
+				var actual = fs.readFileSync(__dirname + "/minify/dist/bundles/minify.css", "utf8"),
+					lackSpecialComment = actual.indexOf("a special comment") === -1;
+
+				assert(lackSpecialComment, "clean css set to remove special comments");
+				done();
+			}).catch(done);
+		});
 	});
 
 	it("Allows specifying an alternative dist directory", function(done){
