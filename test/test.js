@@ -230,66 +230,64 @@ describe("multi build", function(){
 
 	});
 
-	it("Should minify by default", function(done){
-		var config = {
-			config: __dirname + "/minify/config.js",
-			main: "minify"
-		};
+	describe('minifier', function() {
+		var config;
 
-		rmdir(__dirname+"/minify/dist", function(error){
-			if(error) {
-				done(error);
-				return;
-			}
+		beforeEach(function(done) {
+			config = {
+				config: __dirname + "/minify/config.js",
+				main: "minify"
+			};
+			rmdir(__dirname + "/minify/dist", done);
+		});
 
+		it("Should minify by default", function(done){
 			multiBuild(config, { quiet: true }).then(function(){
-
-				var actual = fs.readFileSync(__dirname + "/minify/dist/bundles/minify.js", "utf8");
-
-				var hasLongVariable = actual.indexOf("thisObjectHasABigName") !== -1;
+				var actual = fs.readFileSync(__dirname + "/minify/dist/bundles/minify.js", "utf8"),
+					hasLongVariable = actual.indexOf("thisObjectHasABigName") !== -1;
 
 				assert(!hasLongVariable, "Minified source renamed long variable.");
-
 				done();
 			}).catch(function(e){
 				done(e);
 			});
 		});
 
-	});
-
-	it("Should allow minification to be turned off", function(done){
-		var config = {
-			config: __dirname + "/minify/config.js",
-			main: "minify"
-		};
-
-		var options = {
-			minify: false,
-			quiet: true
-		};
-
-		rmdir(__dirname+"/minify/dist", function(error){
-			if(error) {
-				done(error);
-				return;
-			}
+		it("Should allow minification to be turned off", function(done){
+			var options = {
+				minify: false,
+				quiet: true
+			};
 
 			multiBuild(config, options).then(function(){
-
-				var actual = fs.readFileSync(__dirname + "/minify/dist/bundles/minify.js", "utf8");
-
-				var hasLongVariable = actual.indexOf("thisObjectHasABigName") !== -1;
+				var actual = fs.readFileSync(__dirname + "/minify/dist/bundles/minify.js", "utf8"),
+					hasLongVariable = actual.indexOf("thisObjectHasABigName") !== -1;
 
 				assert(hasLongVariable, "Source includes long variable name.");
-
 				done();
 			}).catch(function(e){
 				done(e);
 			});
-
 		});
 
+		it("Should allow setting uglify-js options", function(done){
+			var options = {
+				quiet: true,
+				uglifyOptions: {
+					mangle: false // skip mangling names.
+				}
+			};
+
+			multiBuild(config, options).then(function(){
+				var actual = fs.readFileSync(__dirname + "/minify/dist/bundles/minify.js", "utf8"),
+					hasLongVariable = actual.indexOf("thisObjectHasABigName") !== -1,
+					hasAnotherLongVariable = actual.indexOf("anotherLongVariableName") !== -1;
+
+				assert(hasLongVariable, "skip mangling names in dependencies graph files");
+				assert(hasAnotherLongVariable, "skip mangling names in stealconfig and main files");
+				done();
+			}).catch(done);
+		});
 	});
 
 	it("Allows specifying an alternative dist directory", function(done){
