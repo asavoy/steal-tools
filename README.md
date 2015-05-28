@@ -1,5 +1,7 @@
 # steal-tools
 
+[![Join the chat at https://gitter.im/asavoy/steal-tools](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/asavoy/steal-tools?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/bitovi/steal-tools.svg?branch=master)](https://travis-ci.org/bitovi/steal-tools)
 
 `steal-tools` is a collection of command-line utilities
